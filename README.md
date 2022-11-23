@@ -280,6 +280,165 @@ Widget build(BuildContext context) => Drawer(
     );
 ```
 
+
+# **Tugas 9: Integrasi Web Service pada Flutter**
+
+##🧨 **Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?** 🧨
+
+
+## 🎍 **Widget yang Dipakai** 🎍
+
+## 🎐 **Mekanisme pengambilan data dari json hingga dapat ditampilkan pada Flutter** 🎐
+
+
+
+## 🏁 **Implementasi Checklist** 🏁
+[x] Dengan menggunakan aplikasi counter_7 yang telah dibuat pada tugas sebelumnya, ditambahkan file `budget.dart`, `data.dart`, `drawer.dart`, dan `form.dart` ke dalam folder `lib`.
+
+[x] Menambahkan tombol navigasi pada `drawer.dart` untuk ke halaman *mywatchlist*.
+
+```
+...
+ListTile(
+            title: const Text('My Watch List'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MyWatchList()),
+              );
+            },
+          ),
+...
+```
+
+[x] Menambahkan models pada file baru `watchlist.dart` pada folder model.
+```import 'dart:convert';
+
+List<WatchList> watchListFromJson(String str) => List<WatchList>.from(json.decode(str).map((x) => WatchList.fromJson(x)));
+
+String watchListToJson(List<WatchList> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class WatchList {
+  WatchList({
+    required this.model,
+    required this.pk,
+    required this.fields,
+  });
+
+  Model? model;
+  int pk;
+  Fields fields;
+
+  factory WatchList.fromJson(Map<String, dynamic> json) => WatchList(
+    model: modelValues.map[json["model"]],
+    pk: json["pk"],
+    fields: Fields.fromJson(json["fields"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "model": modelValues.reverse[model],
+    "pk": pk,
+    "fields": fields.toJson(),
+  };
+}
+
+class Fields {
+  Fields({
+    required this.watched,
+    required this.title,
+    required this.rating,
+    required this.releaseDate,
+    required this.review,
+  });
+
+  bool watched;
+  String title;
+  int rating;
+  DateTime releaseDate;
+  String review;
+
+  factory Fields.fromJson(Map<String, dynamic> json) => Fields(
+    watched: json["watched"],
+    title: json["title"],
+    rating: json["rating"],
+    releaseDate: DateTime.parse(json["release_date"]),
+    review: json["review"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "watched": watched,
+    "title": title,
+    "rating": rating,
+    "release_date": "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
+    "review": review,
+  };
+}
+
+enum Model { MYWATCHLIST_MYWATCHLIST }
+
+final modelValues = EnumValues({
+  "mywatchlist.mywatchlist": Model.MYWATCHLIST_MYWATCHLIST
+});
+
+class EnumValues<T> {
+  Map<String, T> map;
+  Map<T, String>? reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    if (reverseMap == null) {
+      reverseMap = map.map((k, v) => new MapEntry(v, k));
+    }
+    return reverseMap!;
+  }
+}
+```
+
+[x] Menambahkan file baru `mywatchlist.dart` untuk menampilkan list film.
+
+[x] Menambahkan file baru `watchlist_detail.dart` untuk menampilkan detail dari film. Di halaman ini, akan ditampilkan judul, tahun rilis, ratig, status, dan review dari setiap film.
+
+[x] Menjalankan proyek program Flutter dengan `flutter run` pada `cmd`.
+
+[x] Melakukan `add-commit-push` proyek ke repositori `pbp-flutter-lab`.
+
+## 🧲 **Implementasi Bonus** 🧲
+
+[x] Menambahkan *checkbox* pada list film dengan menambah potongan kode berikut di file `mywatchlist.dart` .
+```
+...
+Expanded(
+      flex: 2,
+      child: Checkbox(
+        activeColor: Colors.blue,
+        value: listOfWatched[index],
+        onChanged: (value){
+          setState(() {
+            listOfWatched[index] = !listOfWatched[index];
+          });
+        },
+      ),
+    )
+...
+```
+[x] Menambahkan warna pada *outline* di setiap list dengan menambahkan potongan kode berikut di `mywatchlist.dart`.
+```...
+else{
+  return ListView.builder(
+    itemCount: snapshot.data.length,
+    itemBuilder: (_, index) => Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+        side: BorderSide(
+          color: ((listOfWatched[index])
+          ? Colors.blue
+          : Colors.red),
+          width: 2
+        )
+...
+```
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
